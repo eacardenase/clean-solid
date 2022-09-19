@@ -7,10 +7,26 @@ class Product {
         public size: Size = ''
     ) {}
 
+    private isProductReady(): boolean {
+        for (let key in this) {
+            switch (typeof this[key]) {
+                case 'string':
+                    if (!this[key]) throw new Error(`${key} is empty`);
+                    break;
+                case 'number':
+                    if (this[key] <= 0)
+                        throw new Error(`${key} must be greater than zero`);
+                    break;
+                default:
+                    throw new Error(`${typeof this[key]} is not supported`);
+            }
+        }
+
+        return true;
+    }
+
     public toString() {
-        if (!this.name) throw new Error('Name is empty');
-        if (this.price <= 0) throw new Error('Price must be greater than zero');
-        if (!this.size) throw new Error('Size is empty');
+        if (!this.isProductReady) return;
 
         return `${this.name} (${this.price}), ${this.size}`;
     }

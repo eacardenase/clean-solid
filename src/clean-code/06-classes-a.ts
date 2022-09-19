@@ -1,16 +1,6 @@
 type Gender = 'M' | 'F';
 
-// class Person {
-//     public birthDate: Date;
-//     public gender: Gender;
-//     public name: string;
-
-//     constructor(name: string, gender: Gender, birthDate: Date) {
-//         this.name = name;
-//         this.gender = gender;
-//         this.birthDate = birthDate;
-//     }
-// }
+// No aplicando el principio de responsabilidad unica
 
 class Person {
     constructor(
@@ -20,7 +10,51 @@ class Person {
     ) {}
 }
 
-const person = new Person('Edwin', 'M', new Date('1996-03-20'));
-console.log(person);
+class User extends Person {
+    private lastAccess: Date;
+
+    constructor(
+        public email: string,
+        public role: string,
+        name: string,
+        gender: Gender,
+        birthDate: Date
+    ) {
+        super(name, gender, birthDate);
+        this.lastAccess = new Date();
+    }
+
+    public checkCredentials(): boolean {
+        return true;
+    }
+}
+
+class UserSettings extends User {
+    constructor(
+        public workingDirectory: string,
+        public lastOpenFolder: string,
+        email: string,
+        role: string,
+        name: string,
+        gender: Gender,
+        birthDate: Date
+    ) {
+        super(email, role, name, gender, birthDate);
+    }
+}
+
+const userSettings = new UserSettings(
+    '/usr/home',
+    '/home',
+    'eacardenase@gmail.com',
+    'admin',
+    'Edwin Cardenas',
+    'M',
+    new Date('1996-03-20')
+);
+
+console.log({
+    userSettings,
+});
 
 export {};

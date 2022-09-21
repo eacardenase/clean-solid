@@ -3,10 +3,10 @@ interface Product {
     name: string;
 }
 
-// Usualmente, esto es una clase para controlar la vista que es desplegada al usuario
-// Recuerden que podemos tener muchas vistas que realicen este mismo trabajo.
-class ProductBloc {
-    loadProduct(id: number) {
+class ProductManager {
+    private httpAdapter: Object = {};
+
+    getProduct(id: number) {
         // Realiza un proceso para obtener el producto y retornarlo
         console.log('Producto: ', { id, name: 'OLED Tv' });
     }
@@ -15,22 +15,66 @@ class ProductBloc {
         // Realiza una petición para salvar en base de datos
         console.log('Guardando en base de datos', product);
     }
+}
 
-    notifyClients() {
-        console.log('Enviando correo a los clientes');
+class Mailer {
+    private masterEmail: string = 'eacardenase@gmail.com';
+
+    sendEmail(emailList: string[], template: 'to-clients' | 'to-admins') {
+        console.log(
+            `Enviando correo a los ${template.split('-')[1]}`,
+            template
+        );
+    }
+}
+
+// Usualmente, esto es una clase para controlar la vista que es desplegada al usuario
+// Recuerden que podemos tener muchas vistas que realicen este mismo trabajo.
+class ProductBloc {
+    // private productManager: ProductManager;
+    // private mailer: Mailer;
+
+    // constructor(productManager: ProductManager, mailer: Mailer) {
+    //     this.productManager = productManager;
+    //     this.mailer = mailer;
+    // }
+
+    constructor(
+        private productManager: ProductManager,
+        private mailer: Mailer
+    ) {}
+
+    loadProduct(id: number) {
+        this.productManager.getProduct(id);
     }
 
-    onAddToCart(productId: number) {
+    saveProduct(product: Product) {
+        this.productManager.saveProduct(product);
+    }
+
+    notifyClients() {
+        this.mailer.sendEmail(['eacardenase@unal.edu.co'], 'to-clients');
+    }
+}
+
+class CartBloc {
+    private productsInCart: Product[] = [];
+
+    addToCart(productId: number) {
         // Agregar al carrito de compras
         console.log('Agregando al carrito ', productId);
     }
 }
 
-const productBloc = new ProductBloc();
+const productManager = new ProductManager();
+const mailer = new Mailer();
+
+const productBloc = new ProductBloc(productManager, mailer);
+const cartBloc = new CartBloc();
 
 productBloc.loadProduct(10);
 productBloc.saveProduct({ id: 10, name: 'OLED TV' });
 productBloc.notifyClients();
-productBloc.onAddToCart(10);
+cartBloc.addToCart(10);
 
 export {};
